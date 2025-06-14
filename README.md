@@ -1,5 +1,7 @@
 # 🚀 Avalonia Desktop Template
 
+Clean Architecture scaffold for Avalonia UI apps.
+
 > **Spec** → see [/spec/avalonia-desktop-template-spec.md](spec/avalonia-desktop-template-spec.md)
 >
 > **Purpose** – Jump‑start cross‑platform desktop apps (Windows/macOS/Linux) with **SQLite**, **Azure backup**, **auto‑update**, and GitHub Actions CI out‑of‑the‑box.
@@ -50,15 +52,19 @@ $ dotnet run --project src/BackupService -- sync
 ## 🗂 Repository Layout
 
 ```text
-/               # repo root
-├─ src/         # C# projects
-│   ├─ App/                # Avalonia desktop
-│   ├─ BackupService/      # Sync logic library/CLI
-│   └─ Functions/          # Azure Functions (Isolated Worker)
-├─ infra/       # Bicep IaC (common + svc-backup)
-├─ .github/     # Workflows & templates
+/
+├─ src/
+│   ├─ Core/
+│   │   ├─ Domain/
+│   │   └─ Application/
+│   ├─ Infrastructure/
+│   ├─ Presentation.Desktop/
+│   └─ Presentation.Functions/
+├─ tests/
+│   └─ Unit/
+├─ infra/
 ├─ docker-compose.yml
-└─ spec/        # Design specs & docs
+└─ spec/
 ```
 
 ---
