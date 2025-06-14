@@ -27,7 +27,7 @@
 
 ## 2 🏛 Project Structure
 
-```
+```text
 / (root)
 ├─ src/
 │   ├─ Core/
@@ -44,7 +44,7 @@
 │   └─ svc-backup/                 # SQL Serverless, Storage, Functions
 ├─ .github/workflows/              # CI pipelines
 ├─ docker-compose.yml              # sqlserver + azurite
-└─ spec/avalonia-desktop-template-spec.md
+└─ spec/template-spec.md
 ```
 
 ### 2.1 Reference Rules
@@ -113,16 +113,84 @@
 
 ---
 
-## 6 📚 References
+## 6 🚀 Recommended Post‑Init Template Settings *(Merged)*
 
-* Clean Architecture – "The Onion Architecture" (Jeffrey Palermo) / "Clean Architecture" (R. Martin)
+> **Scope** – These defaults are applied **after** running `dotnet new avalonia.app` and are baked into the template so every fork starts production‑ready.
+
+### 6.1 `.csproj` & `Directory.Build.props`
+
+| Purpose                    | Property example                                     | Notes                    |
+| -------------------------- | ---------------------------------------------------- | ------------------------ |
+| Self‑contained single file | `<SelfContained>true` / `<PublishSingleFile>true>`   | Portable EXE.            |
+| Trim & link                | `<PublishTrimmed>true>`                              | Requires .NET 8.         |
+| Startup perf               | `<PublishReadyToRun>true>`                           | Cross‑gen optimisations. |
+| Treat warnings as errors   | `<TreatWarningsAsErrors>true>`                       | Code quality gate.       |
+| RID matrix                 | `win-x64;osx-x64;linux-x64` via `RuntimeIdentifiers` | CI artefacts.            |
+
+> Shared props live in `build/Directory.Build.props` and flow to every project.
+
+### 6.2 MVVM & Dependency Injection Skeleton
+
+1. Add **CommunityToolkit.MVVM** package.
+2. Register ViewModels & Services in `Program.cs` (or `AppHostBuilder`).
+3. Enforce **constructor injection**; prohibit service locator pattern.
+
+```csharp
+builder.Services.AddSingleton<MainWindowViewModel>();
+builder.Services.AddTransient<INoteService, NoteService>();
+```
+
+### 6.3 Centralised Styles & Theme
+
+* `Styles/_Colors.axaml` – brand colours.
+* Include both `FluentTheme` light/dark; toggle via `RequestedThemeVariant`.
+* Embed font & SVG icon set once.
+
+### 6.4 Developer Experience & Diagnostics
+
+| Feature             | Default                                           |
+| ------------------- | ------------------------------------------------- |
+| Hot‑Reload          | `<EnableHotReload>true>` + extension in `.vscode` |
+| XAML previewer      | `Avalonia.Designer` NuGet.                        |
+| Diagnostics overlay | `Avalonia.Diagnostics` auto‑enabled in Debug.     |
+| GPU forcing         | `AVALONIA_GPU=1` env in `launchSettings.json`.    |
+
+### 6.5 Cross‑Platform Packaging Scripts
+
+| OS          | Tooling snippet                                 | Output       |
+| ----------- | ----------------------------------------------- | ------------ |
+| Windows     | `<WindowsPackageType>Msix</WindowsPackageType>` | `*.msix`     |
+| macOS       | `scripts/pack_dmg.sh` (hdiutil + notarize)      | `*.dmg`      |
+| Linux       | `scripts/pack_appimage.sh`                      | `*.AppImage` |
+| Auto‑update | Squirrel.Azure feed (Blob)                      | SemVer dirs  |
+
+### 6.6 Localization & A11y
+
+* Use `Avalonia.Localization` and `/Resources/Strings.<culture>.axaml`.
+* Apply `AutomationProperties.Name` to interactive controls.
+
+### 6.7 Misc Initial Adjustments
+
+* **Icons/Version** – `Assets/App.ico`, `AssemblyInfo.cs`.
+* **Settings** – `IConfiguration` via `appsettings.json` even on Desktop.
+* **Logging** – Serilog RollingFile + EventLog sinks.
+* **Testing** – `Avalonia.Headless` snapshot UI tests.
+* **Code style** – value rules in `.editorconfig`.
+
+---
+
+## 7 📚 References
+
+* Clean Architecture – *The Onion Architecture* (Jeffrey Palermo) / *Clean Architecture* (R. Martin)
 * ArchUnitNET – [https://github.com/TNG/ArchUnitNET](https://github.com/TNG/ArchUnitNET)
 * Avalonia Docs – [https://avaloniaui.net/docs](https://avaloniaui.net/docs)
 * MediatR – [https://github.com/jbogard/MediatR](https://github.com/jbogard/MediatR)
 * Serilog – [https://serilog.net/](https://serilog.net/)
 * Azure Functions (Isolated) – [https://learn.microsoft.com/azure/azure-functions/dotnet-isolated-process-guide](https://learn.microsoft.com/azure/azure-functions/dotnet-isolated-process-guide)
 * Bicep – [https://learn.microsoft.com/azure/azure-resource-manager/bicep](https://learn.microsoft.com/azure/azure-resource-manager/bicep)
+* Avalonia Packaging – [https://learn.microsoft.com/dotnet/desktop/packaging?view=netdesktop-8.0](https://learn.microsoft.com/dotnet/desktop/packaging?view=netdesktop-8.0)
+* Squirrel.Azure – [https://github.com/shiftkey/squirrel.azure](https://github.com/shiftkey/squirrel.azure)
 
 ---
 
-> **EOF** – AI must honour layer boundaries, generate all files, commit to `main`. 
+> **EOF** – Honour layer boundaries, generate all files, commit to `main`.
