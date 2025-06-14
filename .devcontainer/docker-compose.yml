@@ -1,0 +1,7 @@
+version: '3.8'
+services:
+  app:
+    image: mcr.microsoft.com/devcontainers/dotnet:0-8.0
+    volumes:
+      - ..:/workspace:cached
+    command: sleep infinity
