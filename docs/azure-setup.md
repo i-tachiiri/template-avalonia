@@ -50,15 +50,16 @@ $ az deployment group create \
 | 変数名 | 用途 |
 |--------|------|
 | `AZURITE_KEY` | ローカルストレージ用のアカウントキー |
-| `ConnectionStrings__Default` | SQLite または Azure SQL の接続文字列 |
+| `ConnectionStrings__Sqlite` | SQLite の接続文字列 |
+| `ConnectionStrings__AzureSql` | Azure SQL の接続文字列 |
 | `AzureWebJobsStorage` | Functions 用ストレージ接続文字列 |
 
-ローカル開発では `.env` またはユーザーシークレットで設定しておきます。CI/CD では GitHub Secrets に登録してください。
+ローカル開発では `docker-compose` に既定値が定義されているため、基本的には `.env` を作成せずに起動できます。値を変更したい場合や CI/CD では `.env` または GitHub Secrets で上書きしてください。
 
-### .env ファイルの作成
+### .env ファイルの作成 (任意)
 
-リポジトリ直下に `.env` を用意し、上記変数を記入します。雛形として
-`.env.example` を提供しているのでコピーして利用してください。
+必要に応じてリポジトリ直下に `.env` を用意し、上記変数を記入します。雛形として
+`.env.example` を提供しています。
 
 Azure リソースをデプロイした後、CLI から接続情報を取得して `.env` を更新します。
 

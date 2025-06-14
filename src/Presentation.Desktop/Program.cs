@@ -33,7 +33,7 @@ class Program
             .UseSerilog()
             .ConfigureServices((context, services) =>
             {
-                var connectionString = context.Configuration.GetConnectionString("Default") ?? "Data Source=app.db";
+                var connectionString = context.Configuration.GetConnectionString("Sqlite") ?? "Data Source=app.db";
                 var infra = Assembly.Load("Infrastructure");
                 var extType = infra.GetType("Infrastructure.ServiceCollectionExtensions");
                 var method = extType?.GetMethod("AddInfrastructure");

@@ -10,6 +10,6 @@ services:
   azurite:
     image: mcr.microsoft.com/azure-storage/azurite
     environment:
-      AZURITE_ACCOUNTS: "devstoreaccount1:${AZURITE_KEY}"
+      AZURITE_ACCOUNTS: "devstoreaccount1:${AZURITE_KEY:-AzuriteAzuriteAzuriteAzurite}"
     ports:
       - "10000:10000"
