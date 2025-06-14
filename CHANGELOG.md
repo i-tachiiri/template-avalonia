@@ -8,3 +8,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 - Initial scaffold.
 - Added dev container configuration referencing `docker-compose.yml`.
+- Updated `infra/svc-backup` to deploy Azure SQL Serverless with admin credential parameters.
