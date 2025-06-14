@@ -14,11 +14,16 @@ class Program
     [STAThread]
     public static void Main(string[] args)
     {
-        Log.Logger = new LoggerConfiguration()
+        var loggerConfig = new LoggerConfiguration()
             .MinimumLevel.Debug()
-            .WriteTo.File("logs/log-.txt", rollingInterval: RollingInterval.Day, retainedFileCountLimit: 7)
-            .WriteTo.EventLog("MyApp", manageEventSource: true, restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Warning)
-            .CreateLogger();
+            .WriteTo.File("logs/log-.txt", rollingInterval: RollingInterval.Day, retainedFileCountLimit: 7);
+
+        if (OperatingSystem.IsWindows())
+        {
+            loggerConfig = loggerConfig.WriteTo.EventLog("MyApp", manageEventSource: false, restrictedToMinimumLevel: LogEventLevel.Warning);
+        }
+
+        Log.Logger = loggerConfig.CreateLogger();
 
         var host = Host.CreateDefaultBuilder(args)
             .UseSerilog()
