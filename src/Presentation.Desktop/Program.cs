@@ -1,16 +1,20 @@
 using System;
+using System.Reflection;
 using Avalonia;
 using Serilog.Events;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using Serilog;
-using System.Reflection;
+using Core.Application;
+using Core.Application.Commands;
 
 namespace Presentation.Desktop;
 
 class Program
 {
+    public static IHost AppHost { get; private set; } = default!;
+
     [STAThread]
     public static void Main(string[] args)
     {
@@ -25,7 +29,7 @@ class Program
 
         Log.Logger = loggerConfig.CreateLogger();
 
-        var host = Host.CreateDefaultBuilder(args)
+        AppHost = Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder(args)
             .UseSerilog()
             .ConfigureServices((context, services) =>
             {
@@ -34,9 +38,15 @@ class Program
                 var extType = infra.GetType("Infrastructure.ServiceCollectionExtensions");
                 var method = extType?.GetMethod("AddInfrastructure");
                 method?.Invoke(null, new object[] { services, connectionString });
+
+                services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<CreateNoteHandler>());
+                services.AddTransient<INoteService, NoteService>();
+                services.AddSingleton<MainWindowViewModel>();
+                services.AddSingleton<MainWindow>();
             })
             .Build();
 
+        AppHost.Start();
         BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
     }
 

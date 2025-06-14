@@ -4,8 +4,9 @@ namespace Presentation.Desktop;
 
 public partial class MainWindow : Window
 {
-    public MainWindow()
+    public MainWindow(MainWindowViewModel vm)
     {
+        DataContext = vm;
         InitializeComponent();
     }
 }
