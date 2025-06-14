@@ -41,6 +41,13 @@ $ dotnet run --project src/App
 
 > **Prerequisites** – .NET 8 SDK, Docker Desktop, (optional) Azure CLI.
 
+### Dev Container
+
+Open in **VS Code** or **GitHub Codespaces** and choose **Reopen in Container**.
+The `.devcontainer` setup spins up SQL Server and Azurite using
+`docker-compose.yml` so the app runs with the same connection strings as
+production.
+
 ### Sync to Azure (manual test)
 
 ```bash
