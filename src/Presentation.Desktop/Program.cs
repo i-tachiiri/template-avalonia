@@ -3,6 +3,7 @@ using Avalonia;
 using Serilog.Events;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Configuration;
 using Serilog;
 using System.Reflection;
 
@@ -23,10 +24,11 @@ class Program
             .UseSerilog()
             .ConfigureServices((context, services) =>
             {
+                var connectionString = context.Configuration.GetConnectionString("Default") ?? "Data Source=app.db";
                 var infra = Assembly.Load("Infrastructure");
                 var extType = infra.GetType("Infrastructure.ServiceCollectionExtensions");
                 var method = extType?.GetMethod("AddInfrastructure");
-                method?.Invoke(null, new object[] { services, "Data Source=app.db" });
+                method?.Invoke(null, new object[] { services, connectionString });
             })
             .Build();
 
