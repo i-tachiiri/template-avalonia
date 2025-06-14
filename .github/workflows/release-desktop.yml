@@ -5,12 +5,28 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
+    env:
+      FEED_URL: https://${{ secrets.STORAGE_ACCOUNT }}.blob.core.windows.net/$web/updates
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-dotnet@v3
         with:
           dotnet-version: '8.0.x'
-      - run: dotnet publish src/App/App.csproj -c Release -r win-x64 --self-contained
-      - run: echo "Signing placeholder"
-      - run: echo "Upload to Azure Blob placeholder"
+      - name: Install packaging tool
+        run: dotnet tool install --global vpk
+      - name: Publish desktop app
+        run: dotnet publish src/Presentation.Desktop/Presentation.Desktop.csproj -c Release -r win-x64 --self-contained -o publish
+      - name: Build installer
+        run: vpk pack publish/Presentation.Desktop.exe --packId MyApp --output artifacts --url $env:FEED_URL
+      - name: Sign installer
+        shell: pwsh
+        run: |
+          Set-Content cert.b64 "${{ secrets.WINDOWS_PFX }}"
+          certutil -decode cert.b64 code_sign.pfx
+          signtool sign /f code_sign.pfx /p '${{ secrets.WINDOWS_PFX_PASSWORD }}' /tr http://timestamp.digicert.com /td sha256 /fd sha256 artifacts/*.exe
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Upload installer to Blob
+        run: az storage blob upload-batch -d '$web/updates' -s artifacts --account-name ${{ secrets.STORAGE_ACCOUNT }} --auth-mode key --account-key ${{ secrets.STORAGE_KEY }}
