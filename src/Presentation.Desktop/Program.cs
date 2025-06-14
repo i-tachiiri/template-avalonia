@@ -14,11 +14,26 @@ class Program
     [STAThread]
     public static void Main(string[] args)
     {
-        Log.Logger = new LoggerConfiguration()
+        var loggerConfiguration = new LoggerConfiguration()
             .MinimumLevel.Debug()
-            .WriteTo.File("logs/log-.txt", rollingInterval: RollingInterval.Day, retainedFileCountLimit: 7)
-            .WriteTo.EventLog("MyApp", manageEventSource: true, restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Warning)
-            .CreateLogger();
+            .WriteTo.File(
+                "logs/log-.txt",
+                rollingInterval: RollingInterval.Day,
+                retainedFileCountLimit: 7);
+
+        try
+        {
+            loggerConfiguration = loggerConfiguration.WriteTo.EventLog(
+                "MyApp",
+                manageEventSource: true,
+                restrictedToMinimumLevel: LogEventLevel.Warning);
+        }
+        catch (System.Security.SecurityException)
+        {
+            // Windows EventLog requires elevated privileges; ignore if unavailable.
+        }
+
+        Log.Logger = loggerConfiguration.CreateLogger();
 
         var host = Host.CreateDefaultBuilder(args)
             .UseSerilog()
