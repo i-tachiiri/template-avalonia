@@ -57,6 +57,7 @@ $ dotnet run --project src/BackupService -- sync
 
 For detailed Azure setup and required environment variables, see
 [docs/azure-setup.md](docs/azure-setup.md).
+After provisioning, copy `.env.example` to `.env` and fill in the connection strings.
 
 ---
 
@@ -79,6 +80,9 @@ For detailed Azure setup and required environment variables, see
 ```
 
 ---
+## 🛠 Development Flow
+
+See [docs/development-flow.md](docs/development-flow.md) for a recommended order of design and implementation when building your app.
 
 ## 📦 Update Feed URL
 
