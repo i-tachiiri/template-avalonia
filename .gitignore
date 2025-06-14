@@ -10,3 +10,4 @@ logs/
 
 # Azure Functions local settings
 src/Functions/local.settings.json
+packages-microsoft-prod.deb
