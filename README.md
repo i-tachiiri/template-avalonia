@@ -54,6 +54,9 @@ production.
 $ dotnet run --project src/BackupService -- sync
 ```
 
+For detailed Azure setup and required environment variables, see
+[docs/azure-setup.md](docs/azure-setup.md).
+
 ---
 
 ## 🗂 Repository Layout
