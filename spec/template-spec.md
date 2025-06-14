@@ -2,7 +2,7 @@
 
 > **Audience** – AI pair‑coding tools & human contributors.
 > **Goal** – Provide a ready‑to‑fork *clean‑architecture* desktop template (Avalonia UI) with offline‑first data, cloud backup, and minimal Azure running cost.
-> **Version** – 2025‑06‑14 (🏗 clean‑arch revision 1)
+> **Version** – 2025‑06‑14 (🏗 clean‑arch revision 1.1)
 
 ---
 
