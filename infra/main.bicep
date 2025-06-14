@@ -1,5 +1,8 @@
 param location string = resourceGroup().location
 param prefix string
+param sqlAdminUsername string
+@secure()
+param sqlAdminPassword string
 
 module common 'common/main.bicep' = {
   name: 'common'
@@ -14,5 +17,7 @@ module backup 'svc-backup/main.bicep' = {
   params: {
     location: location
     prefix: prefix
+    sqlAdminUsername: sqlAdminUsername
+    sqlAdminPassword: sqlAdminPassword
   }
 }

@@ -1,5 +1,7 @@
 # 🚀 Avalonia Desktop Template
 
+Clean Architecture scaffold for Avalonia UI apps.
+
 > **Spec** → see [/spec/avalonia-desktop-template-spec.md](spec/avalonia-desktop-template-spec.md)
 >
 > **Purpose** – Jump‑start cross‑platform desktop apps (Windows/macOS/Linux) with **SQLite**, **Azure backup**, **auto‑update**, and GitHub Actions CI out‑of‑the‑box.
@@ -39,26 +41,40 @@ $ dotnet run --project src/App
 
 > **Prerequisites** – .NET 8 SDK, Docker Desktop, (optional) Azure CLI.
 
+### Dev Container
+
+Open in **VS Code** or **GitHub Codespaces** and choose **Reopen in Container**.
+The `.devcontainer` setup spins up SQL Server and Azurite using
+`docker-compose.yml` so the app runs with the same connection strings as
+production.
+
 ### Sync to Azure (manual test)
 
 ```bash
 $ dotnet run --project src/BackupService -- sync
 ```
 
+For detailed Azure setup and required environment variables, see
+[docs/azure-setup.md](docs/azure-setup.md).
+
 ---
 
 ## 🗂 Repository Layout
 
 ```text
-/               # repo root
-├─ src/         # C# projects
-│   ├─ App/                # Avalonia desktop
-│   ├─ BackupService/      # Sync logic library/CLI
-│   └─ Functions/          # Azure Functions (Isolated Worker)
-├─ infra/       # Bicep IaC (common + svc-backup)
-├─ .github/     # Workflows & templates
+/
+├─ src/
+│   ├─ Core/
+│   │   ├─ Domain/
+│   │   └─ Application/
+│   ├─ Infrastructure/
+│   ├─ Presentation.Desktop/
+│   └─ Presentation.Functions/
+├─ tests/
+│   └─ Unit/
+├─ infra/
 ├─ docker-compose.yml
-└─ spec/        # Design specs & docs
+└─ spec/
 ```
 
 ---

@@ -3,11 +3,11 @@ using Avalonia;
 using Serilog.Events;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Serilog;
-using App.Data;
+using System.Reflection;
 
-namespace App;
+namespace Presentation.Desktop;
 
 class Program
 {
@@ -24,8 +24,11 @@ class Program
             .UseSerilog()
             .ConfigureServices((context, services) =>
             {
-                services.AddDbContext<AppDbContext>(options =>
-                    options.UseSqlite("Data Source=app.db"));
+                var connectionString = context.Configuration.GetConnectionString("Default") ?? "Data Source=app.db";
+                var infra = Assembly.Load("Infrastructure");
+                var extType = infra.GetType("Infrastructure.ServiceCollectionExtensions");
+                var method = extType?.GetMethod("AddInfrastructure");
+                method?.Invoke(null, new object[] { services, connectionString });
             })
             .Build();
 

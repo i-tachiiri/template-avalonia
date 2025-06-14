@@ -1,0 +1,7 @@
+<Project>
+  <ItemDefinitionGroup Condition="'$(MSBuildProjectName)' == 'Presentation.Desktop' Or '$(MSBuildProjectName)' == 'Functions'">
+    <ProjectReference>
+      <PrivateAssets>all</PrivateAssets>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+</Project>
