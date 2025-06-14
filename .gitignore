@@ -1,0 +1,12 @@
+bin/
+obj/
+logs/
+*.user
+*.suo
+*.db
+.vs/
+# Visual Studio Code
+.vscode/
+
+# Azure Functions local settings
+src/Functions/local.settings.json

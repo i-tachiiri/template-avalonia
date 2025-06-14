@@ -1,0 +1,15 @@
+version: '3.4'
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      SA_PASSWORD: "YourStrong!Password1"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"
+  azurite:
+    image: mcr.microsoft.com/azure-storage/azurite
+    environment:
+      AZURITE_ACCOUNTS: "devstoreaccount1:${AZURITE_KEY}"
+    ports:
+      - "10000:10000"
