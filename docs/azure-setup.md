@@ -11,6 +11,7 @@
 ## コンテナ環境の起動
 
 ローカル開発では `docker-compose.yml` を利用して SQL Server と Azurite を起動します。
+Docker Desktop を起動し、Docker Engine が動作していることを確認してから実行してください。
 
 ```bash
 # リポジトリルートで実行

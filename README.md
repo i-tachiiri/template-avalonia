@@ -32,11 +32,12 @@ Clean Architecture scaffold for Avalonia UI apps.
 $ git clone https://github.com/your-org/your-repo.git && cd your-repo
 
 # 2. Launch containers (SQL Server + Azurite)
+# (ensure Docker Desktop is running)
 $ docker-compose up -d
 
 # 3. Restore & run desktop app
 $ dotnet restore
-$ dotnet run --project src/App
+$ dotnet run --project src/Presentation.Desktop
 ```
 
 > **Prerequisites** – .NET 8 SDK, Docker Desktop, (optional) Azure CLI.
