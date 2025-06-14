@@ -2,7 +2,7 @@
 
 Clean Architecture scaffold for Avalonia UI apps.
 
-> **Spec** → see [/spec/avalonia-desktop-template-spec.md](spec/avalonia-desktop-template-spec.md)
+> **Spec** → see [/spec/template-spec.md](spec/template-spec.md)
 >
 > **Purpose** – Jump‑start cross‑platform desktop apps (Windows/macOS/Linux) with **SQLite**, **Azure backup**, **auto‑update**, and GitHub Actions CI out‑of‑the‑box.
 

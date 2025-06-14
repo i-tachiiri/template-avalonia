@@ -1,7 +1,7 @@
 # 🤖 AGENT Manifest — Avalonia Desktop Template
 
 > **Audience**: Pair‑coding AI that will generate/maintain the repository.
-> **Linkage**: Read *spec/avalonia-desktop-template-spec.md* **first**; treat this file as execution rules.
+> **Linkage**: Read *spec/template-spec.md* **first**; treat this file as execution rules.
 > **Last‑updated**: 2025‑06‑14.
 
 ---
@@ -14,7 +14,7 @@ Produce and iteratively refine a GitHub template repository that satisfies all f
 
 ## 2. Input Sources
 
-1. **Specification** – `/spec/avalonia-desktop-template-spec.md` *(single source of truth)*.
+1. **Specification** – `/spec/template-spec.md` *(single source of truth)*.
 2. **User Prompts** – ChatGPT / GitHub Issues labelled `ai:request`.
 3. **Existing Code** – Repository contents on default (`main`) branch.
 

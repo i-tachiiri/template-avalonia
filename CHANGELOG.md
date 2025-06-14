@@ -9,3 +9,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Initial scaffold.
 - Added dev container configuration referencing `docker-compose.yml`.
 - Updated `infra/svc-backup` to deploy Azure SQL Serverless with admin credential parameters.
+- Renamed spec file to `spec/template-spec.md` and bumped revision to **clean-arch 1.1**.

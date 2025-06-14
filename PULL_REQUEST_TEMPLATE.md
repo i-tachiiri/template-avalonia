@@ -26,7 +26,7 @@ Fixes #
 
 ### Spec & Docs
 
-* [ ] Changes comply with \[/spec/avalonia-desktop-template-spec.md]
+* [ ] Changes comply with \[/spec/template-spec.md]
 * [ ] Public APIs / configs documented (README or docs/\* updated)
 * [ ] `CHANGELOG.md` updated under **Unreleased**
 

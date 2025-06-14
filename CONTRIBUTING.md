@@ -67,7 +67,7 @@ feat(data): add bulk‑merge helper for backup API
 * [ ] **Tests pass** – `dotnet test` (≥70 % line coverage).
 * [ ] **Lint** – `dotnet format --verify-no-changes` has no diff.
 * [ ] **Workflows** – GitHub Actions all green.
-* [ ] **Spec compliance** – no contradiction with \[/spec/avalonia-desktop-template-spec.md].
+* [ ] **Spec compliance** – no contradiction with \[/spec/template-spec.md].
 * [ ] **Docs updated** – public APIs, configs, or behaviours.
 * [ ] **Changelog** – update `CHANGELOG.md` under “Unreleased”.
 
