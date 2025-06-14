@@ -103,8 +103,7 @@ dotnet restore
 dotnet build
 
 # Start desktop app
-cd src/App
- dotnet run
+dotnet run --project src/Presentation.Desktop
 ```
 
 Use `Run → Attach to Process` in VS/VS Code to debug Azure Functions locally.
