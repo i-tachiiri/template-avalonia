@@ -4,6 +4,7 @@ logs/
 *.user
 *.suo
 *.db
+!app.db
 .vs/
 # Visual Studio Code
 .vscode/

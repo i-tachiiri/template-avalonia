@@ -5,3 +5,8 @@ services:
     volumes:
       - ..:/workspace:cached
     command: sleep infinity
+    environment:
+      - AZURITE_KEY=AzuriteAzuriteAzuriteAzurite
+      - ConnectionStrings__Sqlite=Data Source=app.db
+      - ConnectionStrings__AzureSql=Server=sqlserver;Database=appdb;User Id=sa;Password=YourStrong!Password1;TrustServerCertificate=True
+      - AzureWebJobsStorage=UseDevelopmentStorage=true

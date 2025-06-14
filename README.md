@@ -57,7 +57,9 @@ $ dotnet run --project src/BackupService -- sync
 
 For detailed Azure setup and required environment variables, see
 [docs/azure-setup.md](docs/azure-setup.md).
-After provisioning, copy `.env.example` to `.env` and fill in the connection strings.
+Default values are baked into the `docker-compose` files so you can start the
+dev container without creating an `.env` file. Create one only if you need to
+override the defaults.
 
 ---
 
