@@ -175,12 +175,4 @@ erDiagram
 * **InitialCreate**: all tables above with indexes `(Interpretations ConditionKey)`, `(ReportId, SortOrder)`.
 * Further changes via ADR → EF Core `Add‑Migration`.
 
----
 
-## 5. Action Items (TODO)
-
-* Implement PBKDF2 password hashing & secure storage.
-* Generate `SortOrder` and apply `SectionKind` rules in PDF renderer.
-* Add UI for managing `AstrologerSettings`.
-* Define SyncJob retry & notification policy.
-* Optional: automatic 300 DPI conversion of ChartImages before embed.
