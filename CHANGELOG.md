@@ -12,3 +12,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Renamed spec file to `spec/template-spec.md` and bumped revision to **clean-arch 1.1**.
 - Documented Azure CLI setup and `.env` workflow.
 - Improved Windows CI build speed with NuGet caching.
+- Fixed Ubuntu build failure by adding lock files for NuGet caching.
