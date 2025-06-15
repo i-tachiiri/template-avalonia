@@ -1,196 +1,186 @@
 # 🗄️ Data Design — Horoscope PDF Generator (v1)
 
-> **目的**: 要件定義に基づき、初版 (v1) のドメインモデルと RDB スキーマを提示する。
+> **Scope** – reflects the latest decisions on settings normalization, ReportSection flexibility, authentication, and PII‑aware cloud sync.
 
 ---
 
-## 1. ドメインモデル（集約図）
-
-```
-[Astrologer]──<1..*>──[Client]──1──[BirthInfo]
-                     │
-                     ├──1──[ChartData]──<*>──[ChartAspect]
-                     │                     └──[ChartHouse]
-                     │                     └──<*>──[ChartImage]
-                     │
-                     ├──<*>──[Report]──<*>──[ReportSection]
-                     │
-                     └──<*>──[SyncJob]
-```
-
-* **ChartImage** — 1 チャートに複数画像可。`FilePath` (相対パス) と `BlobUrl` (バックアップ先 URL) を保持。
-* **ReportSection** — Major=星座見出し / Minor=アスペクト or ハウス見出し。並び順・重複抑制ルールは `Astrologer.Settings` に保存。
-* **SyncJob** — ローカルと Azure への同期処理をジョブ単位で管理。
-
----
-
-## 2. ER 図（Mermaid）
+## 1. Domain Model (Mermaid)
 
 ```mermaid
 erDiagram
-    ASTROLOGER ||--o{ CLIENT : has
-    ASTROLOGER ||--o{ INTERPRETATION : owns
-    ASTROLOGER ||--o{ SYNC_JOB : runs
+    ASTROLOGER ||--|| ASTROLOGER_SETTING : has
+    ASTROLOGER ||--o{ CLIENT            : has
+    ASTROLOGER ||--o{ INTERPRETATION    : owns
+    ASTROLOGER ||--o{ SYNC_JOB          : runs
 
-    CLIENT ||--|| BIRTH_INFO : has
-    CLIENT ||--|| CHART_DATA : has
-    CLIENT ||--o{ REPORT : generates
+    CLIENT ||--|| BIRTH_INFO : "has 1"
+    CLIENT ||--|| CHART_DATA : "has 1"
+    CLIENT ||--o{ REPORT      : generates
 
     REPORT ||--o{ REPORT_SECTION : contains
 
     CHART_DATA ||--o{ CHART_ASPECT : includes
     CHART_DATA ||--o{ CHART_HOUSE  : includes
     CHART_DATA ||--o{ CHART_IMAGE  : has
-
-    ASTROLOGER {
-      GUID Id
-      STRING Name
-      STRING Email
-      JSON Settings
-      DATETIME CreatedAt
-    }
-
-    SYNC_JOB {
-      GUID Id
-      GUID AstrologerId
-      STRING JobType
-      STRING Status
-      DATETIME StartedAt
-      DATETIME EndedAt
-      STRING ErrorMsg
-    }
-
-    INTERPRETATION {
-      GUID Id
-      GUID AstrologerId
-      STRING ConditionKey
-      STRING Body
-      DATETIME UpdatedAt
-    }
-
-    CLIENT {
-      GUID Id
-      GUID AstrologerId
-      STRING Name
-      DATETIME CreatedAt
-    }
-
-    BIRTH_INFO {
-      GUID ClientId
-      DATE BirthDate
-      TIME BirthTime
-      DECIMAL Lat
-      DECIMAL Lon
-      STRING TimeZone
-    }
-
-    CHART_DATA {
-      GUID ClientId
-      JSON PlanetPositions
-      JSON HouseCusps
-      DATETIME CalculatedAt
-    }
-
-    CHART_ASPECT {
-      GUID Id
-      GUID ChartDataId
-      STRING AspectType
-      STRING BodyA
-      STRING BodyB
-      DECIMAL Orb
-    }
-
-    CHART_HOUSE {
-      GUID Id
-      GUID ChartDataId
-      INT HouseNo
-      STRING Body
-    }
-
-    CHART_IMAGE {
-      GUID Id
-      GUID ChartDataId
-      STRING Name
-      STRING FilePath
-      STRING BlobUrl
-      INT WidthPx
-      INT HeightPx
-      INT Dpi
-      DATETIME UploadedAt
-    }
-
-    REPORT {
-      GUID Id
-      GUID ClientId
-      STRING ReportType
-      STRING FilePath
-      DATETIME GeneratedAt
-    }
-
-    REPORT_SECTION {
-      GUID Id
-      GUID ReportId
-      STRING Title
-      STRING Body
-      INT Level
-      INT SortOrder
-    }
 ```
 
----
-
-## 3. テーブル定義（主要テーブル）
-
-### 3.1 `ChartImages`
-
-| 列           | 型             | 制約                   | 説明             |
-| ----------- | ------------- | -------------------- | -------------- |
-| Id          | GUID          | PK                   |                |
-| ChartDataId | GUID          | FK → ChartData       |                |
-| Name        | NVARCHAR(100) | NOT NULL             | 表示名            |
-| FilePath    | NVARCHAR(300) | NOT NULL             | 画像の相対パス        |
-| BlobUrl     | NVARCHAR(500) | NULL                 | Azure Blob URL |
-| WidthPx     | INT           |                      |                |
-| HeightPx    | INT           |                      |                |
-| Dpi         | INT           |                      |                |
-| UploadedAt  | DATETIME2     | DEFAULT GETUTCDATE() |                |
-
-### 3.2 `ReportSections`
-
-| 列         | 型             | 制約           | 説明              |
-| --------- | ------------- | ------------ | --------------- |
-| Id        | GUID          | PK           |                 |
-| ReportId  | GUID          | FK → Reports |                 |
-| Title     | NVARCHAR(100) |              |                 |
-| Body      | NTEXT         | NOT NULL     |                 |
-| Level     | INT           | NOT NULL     | 1=Major,2=Minor |
-| SortOrder | INT           | NOT NULL     | レポート内順序         |
-
-### 3.3 `SyncJobs`
-
-| 列            | 型             | 制約               | 説明                                  |
-| ------------ | ------------- | ---------------- | ----------------------------------- |
-| Id           | GUID          | PK               |                                     |
-| AstrologerId | GUID          | FK → Astrologers |                                     |
-| JobType      | NVARCHAR(20)  | NOT NULL         | Upload / Download                   |
-| Status       | NVARCHAR(20)  | NOT NULL         | Queue / InProgress / Success / Fail |
-| StartedAt    | DATETIME2     | NOT NULL         |                                     |
-| EndedAt      | DATETIME2     | NULL             |                                     |
-| ErrorMsg     | NVARCHAR(MAX) | NULL             | 失敗時メッセージ                            |
+> *Preview*: paste into [https://mermaid.live/edit](https://mermaid.live/edit).
 
 ---
 
-## 4. マイグレーション指針
+## 2. Table Definitions (all)
 
-* **InitialCreate**: すべてのテーブルと基本インデックスを生成。
-* 以降のスキーマ変更は ADR で決定し `Add-Migration` で適用。
+> SQL Server types; use VARCHAR/TEXT for SQLite.
+
+### 2.1 `Astrologers`
+
+| Column       | Type             | Constraints          | Notes                          |
+| ------------ | ---------------- | -------------------- | ------------------------------ |
+| Id           | UNIQUEIDENTIFIER | PK                   |                                |
+| Name         | NVARCHAR(100)    | NOT NULL             |                                |
+| Email        | NVARCHAR(320)    | NOT NULL UNIQUE      | **Login ID** (verified e‑mail) |
+| PasswordHash | VARBINARY(64)    | NOT NULL             | PBKDF2‑HMAC‑SHA‑256            |
+| PasswordSalt | VARBINARY(32)    | NOT NULL             |                                |
+| CreatedAt    | DATETIME2        | DEFAULT GETUTCDATE() |                                |
+
+### 2.2 `AstrologerSettings` (1‑to‑1)
+
+| Column             | Type             | Constraints                     | Notes                            |
+| ------------------ | ---------------- | ------------------------------- | -------------------------------- |
+| AstrologerId       | UNIQUEIDENTIFIER | PK & FK → Astrologers(Id)       |                                  |
+| HouseSystem        | NVARCHAR(20)     | NOT NULL                        | `Placidus`, `WholeSign`, …       |
+| SectionOrderRule   | NVARCHAR(20)     | NOT NULL DEFAULT 'planetsFirst' | `planetsFirst` / `housesFirst`   |
+| DeduplicateAspect  | BIT              | NOT NULL DEFAULT 0              | 1 = remove duplicate aspect text |
+| DefaultBgImagePath | NVARCHAR(300)    | NULL                            | global report background         |
+| UpdatedAt          | DATETIME2        | DEFAULT GETUTCDATE()            |                                  |
+
+### 2.3 `Interpretations`
+
+| Column       | Type             | Constraints           | Notes            |      |               |
+| ------------ | ---------------- | --------------------- | ---------------- | ---- | ------------- |
+| Id           | UNIQUEIDENTIFIER | PK                    |                  |      |               |
+| AstrologerId | UNIQUEIDENTIFIER | FK → Astrologers(Id)  |                  |      |               |
+| ConditionKey | NVARCHAR(100)    | INDEX IX\_Interp\_Key | e.g. \`Sun       | Moon | Conjunction\` |
+| Body         | NTEXT            | NOT NULL              | Markdown allowed |      |               |
+| UpdatedAt    | DATETIME2        | DEFAULT GETUTCDATE()  |                  |      |               |
+
+### 2.4 `Clients`
+
+| Column       | Type             | Constraints          | Notes                               |
+| ------------ | ---------------- | -------------------- | ----------------------------------- |
+| Id           | UNIQUEIDENTIFIER | PK                   |                                     |
+| AstrologerId | UNIQUEIDENTIFIER | FK → Astrologers(Id) |                                     |
+| Name         | NVARCHAR(100)    | NOT NULL             |                                     |
+| Email        | NVARCHAR(320)    | NULL                 | **LocalOnly** (not pushed to cloud) |
+| CreatedAt    | DATETIME2        | DEFAULT GETUTCDATE() |                                     |
+
+### 2.5 `BirthInfos`
+
+| Column    | Type             | Constraints           | Notes   |
+| --------- | ---------------- | --------------------- | ------- |
+| ClientId  | UNIQUEIDENTIFIER | PK & FK → Clients(Id) | 1:1     |
+| BirthDate | DATE             | NOT NULL              |         |
+| BirthTime | TIME             | NOT NULL              |         |
+| Lat       | DECIMAL(9,4)     | NOT NULL              |         |
+| Lon       | DECIMAL(9,4)     | NOT NULL              |         |
+| TimeZone  | NVARCHAR(50)     | NOT NULL              | IANA tz |
+
+### 2.6 `ChartData`
+
+| Column          | Type             | Constraints           | Notes |
+| --------------- | ---------------- | --------------------- | ----- |
+| ClientId        | UNIQUEIDENTIFIER | PK & FK → Clients(Id) | 1:1   |
+| PlanetPositions | NVARCHAR(MAX)    | NOT NULL              | JSON  |
+| HouseCusps      | NVARCHAR(MAX)    | NOT NULL              | JSON  |
+| CalculatedAt    | DATETIME2        | DEFAULT GETUTCDATE()  |       |
+
+### 2.7 `ChartAspects`
+
+| 列名          | 型                | 制約                       | 説明      |
+| ----------- | ---------------- | ------------------------ | ------- |
+| Id          | UNIQUEIDENTIFIER | PK                       |         |
+| ChartDataId | UNIQUEIDENTIFIER | FK → ChartData(ClientId) |         |
+| AspectType  | NVARCHAR(50)     | NOT NULL                 | アスペクト種別 |
+| BodyA       | NVARCHAR(20)     | NOT NULL                 | 天体A     |
+| BodyB       | NVARCHAR(20)     | NOT NULL                 | 天体B     |
+| Orb         | DECIMAL(9,4)     | NOT NULL                 | オーブ     |
+
+### 2.8 `ChartHouses`
+
+| 列名          | 型                | 制約                       | 説明        |
+| ----------- | ---------------- | ------------------------ | --------- |
+| Id          | UNIQUEIDENTIFIER | PK                       |           |
+| ChartDataId | UNIQUEIDENTIFIER | FK → ChartData(ClientId) |           |
+| HouseNo     | INT              | NOT NULL                 | 1–12      |
+| Body        | NVARCHAR(20)     | NOT NULL                 | 天体/アステロイド |
+
+### 2.9 `ChartImages`
+
+| 列名          | 型                | 制約                       | 説明         |
+| ----------- | ---------------- | ------------------------ | ---------- |
+| Id          | UNIQUEIDENTIFIER | PK                       |            |
+| ChartDataId | UNIQUEIDENTIFIER | FK → ChartData(ClientId) |            |
+| Name        | NVARCHAR(100)    | NOT NULL                 | 画像名        |
+| FilePath    | NVARCHAR(300)    | NOT NULL                 | 相対パス       |
+| BlobUrl     | NVARCHAR(500)    | NULL                     | バックアップ URL |
+| WidthPx     | INT              |                          |            |
+| HeightPx    | INT              |                          |            |
+| Dpi         | INT              |                          |            |
+| UploadedAt  | DATETIME2        | DEFAULT GETUTCDATE()     |            |
+
+### 2.10 `Reports`
+
+| 列名          | 型                | 制約                   | 説明                 |
+| ----------- | ---------------- | -------------------- | ------------------ |
+| Id          | UNIQUEIDENTIFIER | PK                   |                    |
+| ClientId    | UNIQUEIDENTIFIER | FK → Clients(Id)     |                    |
+| ReportType  | NVARCHAR(50)     | NOT NULL             | `Full`/`Summary` 等 |
+| FilePath    | NVARCHAR(400)    | NOT NULL             | 生成 PDF 保存先         |
+| GeneratedAt | DATETIME2        | DEFAULT GETUTCDATE() |                    |
+
+### 2.11 `ReportSections` – flexible pages `ReportSections` – flexible pages
+
+| Column              | Type             | Constraints        | Notes                                            |
+| ------------------- | ---------------- | ------------------ | ------------------------------------------------ |
+| Id                  | UNIQUEIDENTIFIER | PK                 |                                                  |
+| ReportId            | UNIQUEIDENTIFIER | FK → Reports(Id)   |                                                  |
+| SectionKind         | NVARCHAR(20)     | NOT NULL           | `Cover`,`Intro`,`Major`,`Minor`,`Chart`,`Footer` |
+| Heading             | NVARCHAR(100)    | NULL               | Visible heading text                             |
+| ShowHeading         | BIT              | NOT NULL DEFAULT 1 | 0 = hidden                                       |
+| BackgroundImagePath | NVARCHAR(300)    | NULL               | optional BG                                      |
+| Body                | NTEXT            | NOT NULL           | content                                          |
+| Level               | INT              | NOT NULL           | 0=other,1=Major,2=Minor                          |
+| SortOrder           | INT              | NOT NULL           | order                                            |
+
+### 2.12 `SyncJobs`
+
+\| Id PK · AstrologerId FK · JobType NVARCHAR(20) · Status NVARCHAR(20) · StartedAt · EndedAt · ErrorMsg |
 
 ---
 
-## 5. TODO
+## 3. Cloud Sync & PII Policy
 
-1. **SortOrder 自動生成** — `Astrologer.Settings.sectionOrderRule` を実装（例: `planetsFirst`/`housesFirst`）。
-2. **Aspect 重複抑制** — `deduplicateAspect` フラグ true の場合、BodyA が属する星座にのみ出力。
-3. **SyncJob 再実行ポリシー** — リトライ間隔と回数を決定し ADR に記録。
-4. **ChartImage 圧縮** — PDF 埋め込み前に 300 DPI へ統一する必要性を検証。
-5. **ReportSection インデックス** — `(ReportId, SortOrder)` で読み取り性能を確認。
+| Table.Column      | Sync Policy                   | Rationale                      |
+| ----------------- | ----------------------------- | ------------------------------ |
+| Clients.Email     | **LocalOnly**                 | Avoid storing PII in Azure SQL |
+| PasswordHash/Salt | Synced (encrypted connection) | required for auth              |
+| BirthInfos.\*     | Synced (encrypted)            | essential for chart calc       |
+
+`SyncJob` executor skips `LocalOnly` columns or masks them before upload.
+
+---
+
+## 4. Migration Plan
+
+* **InitialCreate**: all tables above with indexes `(Interpretations ConditionKey)`, `(ReportId, SortOrder)`.
+* Further changes via ADR → EF Core `Add‑Migration`.
+
+---
+
+## 5. Action Items (TODO)
+
+* Implement PBKDF2 password hashing & secure storage.
+* Generate `SortOrder` and apply `SectionKind` rules in PDF renderer.
+* Add UI for managing `AstrologerSettings`.
+* Define SyncJob retry & notification policy.
+* Optional: automatic 300 DPI conversion of ChartImages before embed.
