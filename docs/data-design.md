@@ -32,8 +32,8 @@ erDiagram
     ASTROLOGER ||--o{ INTERPRETATION : owns
     ASTROLOGER ||--o{ SYNC_JOB : runs
 
-    CLIENT ||--|| BIRTH_INFO : "has 1"
-    CLIENT ||--|| CHART_DATA : "has 1"
+    CLIENT ||--|| BIRTH_INFO : has
+    CLIENT ||--|| CHART_DATA : has
     CLIENT ||--o{ REPORT : generates
 
     REPORT ||--o{ REPORT_SECTION : contains
@@ -43,7 +43,7 @@ erDiagram
     CHART_DATA ||--o{ CHART_IMAGE  : has
 
     ASTROLOGER {
-      GUID Id PK
+      GUID Id
       STRING Name
       STRING Email
       JSON Settings
@@ -51,7 +51,7 @@ erDiagram
     }
 
     SYNC_JOB {
-      GUID Id PK
+      GUID Id
       GUID AstrologerId
       STRING JobType
       STRING Status
@@ -61,7 +61,7 @@ erDiagram
     }
 
     INTERPRETATION {
-      GUID Id PK
+      GUID Id
       GUID AstrologerId
       STRING ConditionKey
       STRING Body
@@ -69,14 +69,14 @@ erDiagram
     }
 
     CLIENT {
-      GUID Id PK
+      GUID Id
       GUID AstrologerId
       STRING Name
       DATETIME CreatedAt
     }
 
     BIRTH_INFO {
-      GUID ClientId PK
+      GUID ClientId
       DATE BirthDate
       TIME BirthTime
       DECIMAL Lat
@@ -85,14 +85,14 @@ erDiagram
     }
 
     CHART_DATA {
-      GUID ClientId PK
+      GUID ClientId
       JSON PlanetPositions
       JSON HouseCusps
       DATETIME CalculatedAt
     }
 
     CHART_ASPECT {
-      GUID Id PK
+      GUID Id
       GUID ChartDataId
       STRING AspectType
       STRING BodyA
@@ -101,14 +101,14 @@ erDiagram
     }
 
     CHART_HOUSE {
-      GUID Id PK
+      GUID Id
       GUID ChartDataId
       INT HouseNo
       STRING Body
     }
 
     CHART_IMAGE {
-      GUID Id PK
+      GUID Id
       GUID ChartDataId
       STRING Name
       STRING FilePath
@@ -120,7 +120,7 @@ erDiagram
     }
 
     REPORT {
-      GUID Id PK
+      GUID Id
       GUID ClientId
       STRING ReportType
       STRING FilePath
@@ -128,7 +128,7 @@ erDiagram
     }
 
     REPORT_SECTION {
-      GUID Id PK
+      GUID Id
       GUID ReportId
       STRING Title
       STRING Body
