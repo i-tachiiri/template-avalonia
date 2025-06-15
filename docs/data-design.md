@@ -43,97 +43,97 @@ erDiagram
     CHART_DATA ||--o{ CHART_IMAGE  : has
 
     ASTROLOGER {
-      GUID  Id PK
-      string Name
-      string Email
-      json   Settings   "houseSystem, sortOrder, deduplicateAspect 等"
-      datetime CreatedAt
+      GUID Id PK
+      STRING Name
+      STRING Email
+      JSON Settings
+      DATETIME CreatedAt
     }
 
     SYNC_JOB {
-      GUID  Id PK
-      GUID  AstrologerId FK
-      string JobType      "Upload|Download"
-      string Status       "Queue|InProgress|Success|Fail"
-      datetime StartedAt
-      datetime EndedAt
-      string   ErrorMsg
+      GUID Id PK
+      GUID AstrologerId
+      STRING JobType
+      STRING Status
+      DATETIME StartedAt
+      DATETIME EndedAt
+      STRING ErrorMsg
     }
 
     INTERPRETATION {
-      GUID  Id PK
-      GUID  AstrologerId FK
-      string ConditionKey
-      text   Body
-      datetime UpdatedAt
+      GUID Id PK
+      GUID AstrologerId
+      STRING ConditionKey
+      STRING Body
+      DATETIME UpdatedAt
     }
 
     CLIENT {
-      GUID  Id PK
-      GUID  AstrologerId FK
-      string Name
-      datetime CreatedAt
+      GUID Id PK
+      GUID AstrologerId
+      STRING Name
+      DATETIME CreatedAt
     }
 
     BIRTH_INFO {
-      GUID  ClientId PK FK
-      date   BirthDate
-      time   BirthTime
-      decimal(9,4) Lat
-      decimal(9,4) Lon
-      string  TimeZone
+      GUID ClientId PK
+      DATE BirthDate
+      TIME BirthTime
+      DECIMAL Lat
+      DECIMAL Lon
+      STRING TimeZone
     }
 
     CHART_DATA {
-      GUID  ClientId PK FK
-      nvarchar(max) PlanetPositions
-      nvarchar(max) HouseCusps
-      datetime CalculatedAt
+      GUID ClientId PK
+      JSON PlanetPositions
+      JSON HouseCusps
+      DATETIME CalculatedAt
     }
 
     CHART_ASPECT {
-      GUID  Id PK
-      GUID  ChartDataId FK
-      string AspectType
-      string BodyA
-      string BodyB
-      decimal(9,4) Orb
+      GUID Id PK
+      GUID ChartDataId
+      STRING AspectType
+      STRING BodyA
+      STRING BodyB
+      DECIMAL Orb
     }
 
     CHART_HOUSE {
-      GUID  Id PK
-      GUID  ChartDataId FK
-      int    HouseNo
-      string Body
+      GUID Id PK
+      GUID ChartDataId
+      INT HouseNo
+      STRING Body
     }
 
     CHART_IMAGE {
-      GUID  Id PK
-      GUID  ChartDataId FK
-      nvarchar(100) Name
-      nvarchar(300) FilePath   "相対パス"
-      nvarchar(500) BlobUrl    "バックアップ URL (nullable)"
-      int    WidthPx
-      int    HeightPx
-      int    Dpi
-      datetime UploadedAt
+      GUID Id PK
+      GUID ChartDataId
+      STRING Name
+      STRING FilePath
+      STRING BlobUrl
+      INT WidthPx
+      INT HeightPx
+      INT Dpi
+      DATETIME UploadedAt
     }
 
     REPORT {
       GUID Id PK
-      GUID ClientId FK
-      nvarchar(50) ReportType   "Full|Summary|Transit ..."
-      nvarchar(400) FilePath
-      datetime GeneratedAt
+      GUID ClientId
+      STRING ReportType
+      STRING FilePath
+      DATETIME GeneratedAt
     }
 
     REPORT_SECTION {
       GUID Id PK
-      GUID ReportId FK
-      nvarchar(100) Title
-      text   Body
-      int    Level        "1=Major / 2=Minor"
-      int    SortOrder
+      GUID ReportId
+      STRING Title
+      STRING Body
+      INT Level
+      INT SortOrder
     }
 ```
 
@@ -194,4 +194,3 @@ erDiagram
 3. **SyncJob 再実行ポリシー** — リトライ間隔と回数を決定し ADR に記録。
 4. **ChartImage 圧縮** — PDF 埋め込み前に 300 DPI へ統一する必要性を検証。
 5. **ReportSection インデックス** — `(ReportId, SortOrder)` で読み取り性能を確認。
-
